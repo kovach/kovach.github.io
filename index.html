@@ -104,7 +104,12 @@ data Map
  }
 {% endhighlight %}
 <p>
-Objects that consist of "diagrams" of other objects and maps can also be
+The power of Lift comes from the way it represents dynamic relationships between
+objects.  There is no global state; instead, the state of any given element is
+determined by the maps defined on it.
+</p>
+<p>
+Also, objects that consist of "diagrams" of other objects and maps can be
 defined, and can be parametric.  For instance, we might have object types
 called "Point" and "Box" to represent the notions of coordinate and bounding
 box.  A graphical element to be rendered might be expected to possess a
@@ -118,14 +123,18 @@ element =
  { name = "element"
  , fields = [("elem", Var "x"),
              ("point", point)
-             ("Box", box)]
+             ("box", box)]
  , arrows = [] -- No additional arrows
  , maps [(Var "pointMap", "elem", "point"),
          (Var "boxMap",   "elem", "box")]
  }
 
 {% endhighlight %}
-This type is parametrized by an object and two maps as described in the paragraph above.
+This type is parametrized by an object and two maps as described in the
+paragraph above.  Now, any system that expects point and a box objects can be
+passed an element instead; the internal "elem" field need never be directly
+examined, as it will be kept in sync with "point" and "box" and the rest of the
+system through its internal maps.
 </p>
 <p>
 </p>
