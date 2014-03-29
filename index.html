@@ -34,7 +34,7 @@ onoff = Finite { fields = ["on", "off"] }
 {% endhighlight %}
 </p>
 <p>
-Also needed are externally defined objects, like the objects that represent mouse and keyboard, and objects for rendering SVG and other DOM elements.
+Also needed are externally defined objects, like the objects that represent mouse and keyboard, and objects for rendering SVG and other DOM elements:
 {% highlight haskell %}
 mouse, keyboard, textElement :: ObjectType
 mouse = External "Mouse"
@@ -46,9 +46,9 @@ They are defined elsewhere with pure JS code.
 <p>
 A fully general {%raw%}ObjectType{%endraw%} description consists of a name, a
 list of object types describing the components of the state, and a collection
-of labelled transitions that link states.  An object inherits the transitions
-from its component objects, so these are available to it as well.
-
+of labelled transitions that link states.  Transitions can be interpreted as
+events that modify the state of an object.  An object inherits the transitions
+from its component objects, so these are available to it as well.  
 {% highlight haskell %}
 type Name = String
 type Label = String
@@ -64,9 +64,9 @@ data ObjectType
  }
  | Finite { fields :: [Label] }
  | External { name :: Symbol }
+ | Var { name :: Symbol } -- Read to the end for explanation...
 
-
-
+-- Example object with finite state
 switch :: ObjectType
 switch =
  ObjectType
@@ -104,16 +104,18 @@ data Map
  }
 {% endhighlight %}
 <p>
-The power of Lift comes from the way it represents dynamic relationships between
-objects.  There is no global state; instead, the state of any given element is
-determined by the maps defined on it.
+The power of Lift comes from the way it represents dynamic relationships
+between objects.  There is no global state; instead, the state of any given
+element is determined by the maps defined into it and out of it, which are a
+local property of the object.
 </p>
 <p>
 Also, objects that consist of "diagrams" of other objects and maps can be
 defined, and can be parametric.  For instance, we might have object types
-called "Point" and "Box" to represent the notions of coordinate and bounding
+called "point" and "box" to represent the notions of coordinate and bounding
 box.  A graphical element to be rendered might be expected to possess a
-coordinate and a box; this can be abbreviated with a type:
+coordinate and a box; by possess, we mean that it has maps out of it into point
+and box.  This all can be abbreviated with a type:
 {% highlight haskell %}
 point, box, element :: ObjectType
 point = ...
@@ -121,7 +123,7 @@ box = ...
 element =
  ObjectType
  { name = "element"
- , fields = [("elem", Var "x"),
+ , fields = [("elem", Var "elemObj"),
              ("point", point)
              ("box", box)]
  , arrows = [] -- No additional arrows
@@ -131,10 +133,11 @@ element =
 
 {% endhighlight %}
 This type is parametrized by an object and two maps as described in the
-paragraph above.  Now, any system that expects point and a box objects can be
-passed an element instead; the internal "elem" field need never be directly
-examined, as it will be kept in sync with "point" and "box" and the rest of the
-system through its internal maps.
+paragraph above.  The "Var" fields and maps denote these parameters.  Now, any
+system that expects point and a box objects can be passed an element instead;
+the internal "elem" field need never be directly examined, as it will be kept
+in sync with "point" and "box" and the rest of the system through its internal
+maps.
 </p>
 <p>
 </p>
