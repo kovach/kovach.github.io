@@ -30,7 +30,7 @@ The most basic objects are finite state-machines, which are defined by a list
 of state labels and nothing more:
 {% highlight haskell %}
 onoff :: ObjectType
-onoff = Finite { fields = ["on", "off"] }
+onoff = Finite { states = ["on", "off"] }
 {% endhighlight %}
 </p>
 <p>
@@ -62,7 +62,7 @@ data ObjectType
  , arrows :: [(Label, Arrow))]
  , maps :: [(Map, Symbol, Symbol)]
  }
- | Finite { fields :: [Label] }
+ | Finite { states :: [Label] }
  | External { name :: Symbol }
  | Var { name :: Symbol } -- Read to the end for explanation...
 
