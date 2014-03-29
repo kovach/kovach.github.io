@@ -52,6 +52,7 @@ from its component objects, so these are available to it as well.
 {% highlight haskell %}
 type Name = String
 type Label = String
+type Field = String
 
 -- The type for a transition
 type Arrow = (PreCondition, PostCondition)
@@ -59,9 +60,9 @@ type Arrow = (PreCondition, PostCondition)
 data ObjectType
  = ObjectType
  { name :: Name
- , fields :: [(Name, ObjectType)]
+ , fields :: [(Field, ObjectType)]
  , arrows :: [(Label, Arrow))]
- , maps :: [(Map, Symbol, Symbol)]
+ , maps :: [(Map, Field, Field)]
  }
  | Finite { states :: [Label] }
  | External { name :: Symbol }
