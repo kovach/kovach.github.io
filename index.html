@@ -10,6 +10,11 @@ This is a literate pseudo-Haskell program with some type declarations that are
 (simplified versions) from my library.  It should be readable even without
 Haskell familiarity.
 </p>
+<p>
+Please note that a user of the library would not directly program with
+these types.  This is a demo of the internal representation, and a brief
+explanation of what makes it a good model.
+</p>
 
 <p>
 I am working on a new event-driven user interface system.  I call it "Lift" for now.
@@ -50,10 +55,6 @@ of labelled transitions that link states.  Transitions can be interpreted as
 events that modify the state of an object.  An object inherits the transitions
 from its component objects, so these are available to it as well.  
 {% highlight haskell %}
-type Name = String
-type Label = String
-type Field = String
-
 -- The type for a transition
 type Arrow = (PreCondition, PostCondition)
 
@@ -67,6 +68,11 @@ data ObjectType
  | Finite { states :: [Label] }
  | External { name :: Symbol }
  | Var { name :: Symbol } -- Read to the end for explanation...
+
+-- Types synonyms used above
+type Name = String
+type Label = String
+type Field = String
 
 -- Example object with finite state
 switch :: ObjectType
