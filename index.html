@@ -6,7 +6,7 @@ title: Lift
 
 Hello World!
 <p>
-This is a pseudo-literate Haskell program with some type declarations that are
+This is a literate pseudo-Haskell program with some type declarations that are
 (simplified versions) from my library.  It should be readable even without
 Haskell familiarity.
 </p>
@@ -72,8 +72,8 @@ switch =
  ObjectType
  { name = "switch"
  , fields = [("position", onoff)]
- , arrows = [("flip", (position = on,  position = off)),
-             ("flip", (position = off, position = on))]
+ , arrows = [("flip", (position = on  -> position = off)),
+             ("flip", (position = off -> position = on))]
  }
 
 {% endhighlight %}
