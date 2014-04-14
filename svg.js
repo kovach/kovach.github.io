@@ -36,8 +36,8 @@ initSVG = function() {
     .attr("tabindex", 1)
     .append("svg")
     .attr("class", "chart")
-    .attr("width", "100%")
-    .attr("height", "100%")
+    .attr("width", "98%")
+    .attr("height", "98%")
     ;
 
   // Measure text dimensions
