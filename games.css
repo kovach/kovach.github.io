@@ -1,0 +1,29 @@
+.text-obj {
+  fill : #93a1a1;
+  font-family: monospace;
+  font-size: 14pt;
+}
+.rect-obj {
+  stroke : #93a1a1;
+  fill : none;
+  stroke-width: 1;
+}
+:focus {
+  outline: 0;
+}
+.arrow {
+  fill: none;
+  stroke: #93a1a1;
+  stroke-width: 2;
+}
+.point {
+  fill: #93a1a1;
+}
+.point-cover {
+  stroke-width: 4;
+  opacity: 0;
+}
+#arrow-mark {
+  fill: #93a1a1;
+  stroke: #93a1a1;
+}

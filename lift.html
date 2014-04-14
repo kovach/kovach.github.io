@@ -1,0 +1,156 @@
+---
+layout: default
+title: Lift
+---
+<div id="home">
+<b>Hello YC!
+  I will have a live demo up soon.
+  Below is some technical information.
+</b>
+<p>
+This is a literate pseudo-Haskell program with some type declarations that are
+(simplified versions) from my library.  It should be readable even without
+Haskell familiarity.
+</p>
+<p>
+Please note that a user of the library would not directly program with
+these types.  This is a demo of the internal representation, and a brief
+explanation of what makes it a good model.
+</p>
+
+<p>
+I am working on a new event-driven user interface system.  I call it "Lift" for now.
+</p>
+{% highlight haskell %}
+module Lift where
+{% endhighlight %}
+
+<p>
+The fundamental objects are state-machines, which I will often refer to as
+"objects" or sometimes as "games", and maps between them.  An interface is
+defined by a collection of object types and map types, and instantiated with
+real JS objects compiled from the definitions described below.
+</p>
+
+<p>
+The most basic objects are finite state-machines, which are defined by a list
+of state labels and nothing more:
+{% highlight haskell %}
+onoff :: ObjectType
+onoff = Finite { states = ["on", "off"] }
+{% endhighlight %}
+</p>
+<p>
+Also needed are externally defined objects, like the objects that represent mouse and keyboard, and objects for rendering SVG and other DOM elements:
+{% highlight haskell %}
+mouse, keyboard, textElement :: ObjectType
+mouse = External "Mouse"
+keyboard = External "Keyboard"
+textElement = External "TextElement"
+{% endhighlight %}
+</p>
+<p>
+They are defined elsewhere with pure JS code.
+</p>
+<p>
+A fully general {%raw%}ObjectType{%endraw%} description consists of a name, a
+list of object types describing the components of the state, and a collection
+of labelled transitions that link states.  Transitions can be interpreted as
+events that modify the state of an object.  An object inherits the transitions
+from its component objects, so these are available to it as well.  
+{% highlight haskell %}
+-- The type for a transition
+type Arrow = (PreCondition, PostCondition)
+
+data ObjectType
+ = ObjectType
+ { name :: Name
+ , fields :: [(Field, ObjectType)]
+ , arrows :: [(Label, Arrow))]
+ , maps :: [(Map, Field, Field)]
+ }
+ | Finite { states :: [Label] }
+ | External { name :: Symbol }
+ | Var { name :: Symbol } -- Read to the end for explanation...
+
+-- Types synonyms used above
+type Name = String
+type Label = String
+type Field = String
+
+-- Example object with finite state
+switch :: ObjectType
+switch =
+ ObjectType
+ { name = "switch"
+ , fields = [("position", onoff)]
+ , arrows = [("flip", (position = on  -> position = off)),
+             ("flip", (position = off -> position = on))]
+ }
+
+{% endhighlight %}
+<p>
+We won't fully explain how pre- and post-conditions are written down.  The
+"maps" component of ObjectType is optional and will be explained below.
+</p>
+
+<p>
+A {%raw%}Map{%endraw%} has a source object and a target object.  It is required
+to send each
+transition of the source type to a transition of the target.  Maps can be
+thought of as consistency relations that must be maintained between various
+objects, or as things that propagate events between objects.  Whenever an
+object goes through a transition, all maps out of it are triggered, and they
+update their targets.
+</p>
+{% highlight haskell %}
+-- Identifies a single arrow in the source object with one in the target
+data ArrowMap = ((Label, Arrow), (Label, Arrow))
+-- A collection of ArrowMaps from source to target
+data Map 
+ = Map
+ { name :: Name
+ , source :: ObjectType
+ , target :: ObjectType
+ , map :: [ArrowMap]
+ }
+{% endhighlight %}
+<p>
+The power of Lift comes from the way it represents dynamic relationships
+between objects.  There is no global state; instead, the state of any given
+element is determined by the maps defined into it and out of it, which are a
+local property of the object.
+</p>
+<p>
+Also, objects that consist of "diagrams" of other objects and maps can be
+defined, and can be parametric.  For instance, we might have object types
+called "point" and "box" to represent the notions of coordinate and bounding
+box.  A graphical element to be rendered might be expected to possess a
+coordinate and a box; by possess, we mean that it has maps out of it into point
+and box.  This all can be abbreviated with a type:
+{% highlight haskell %}
+point, box, element :: ObjectType
+point = ...
+box = ...
+element =
+ ObjectType
+ { name = "element"
+ , fields = [("elem", Var "elemObj"),
+             ("point", point)
+             ("box", box)]
+ , arrows = [] -- No additional arrows
+ , maps [(Var "pointMap", "elem", "point"),
+         (Var "boxMap",   "elem", "box")]
+ }
+
+{% endhighlight %}
+This type is parametrized by an object and two maps as described in the
+paragraph above.  The "Var" fields and maps denote these parameters.  Now, any
+system that expects point and box objects can be passed an element instead;
+the internal "elem" field need never be directly examined, as it will be kept
+in sync with "point" and "box" and the rest of the system through its internal
+maps.
+</p>
+<p>
+</p>
+</div>
