@@ -371,10 +371,15 @@ makeLineTest = function(keys) {
 }
 
 makeReplayTest = function(keys) {
-  var log = demoLog();
 
+  var t1 = new Date().getTime();
+
+  var log = demoLog();
   var w1 = new worldManager();
   runReplay(log, keyMapper, w1);
+
+  var t2 = new Date().getTime();
+  console.log("time: ", (t2-t1)/1000);
 
   var obj = new object();
   var notstarted = true;
